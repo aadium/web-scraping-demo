@@ -20,23 +20,19 @@ async function scrapeUrl(url, selectors) {
     }
 }
 
-const url = 'https://techcrunch.com/';
-const selectors = {
-    title: 'h2.wp-block-post-title',
-    author: 'div.wp-block-tc23-author-card-name'
-};
+module.exports = async (req, res) => {
+    const url = 'https://techcrunch.com/';
+    const selectors = {
+        title: 'h2.wp-block-post-title',
+        author: 'div.wp-block-tc23-author-card-name'
+    };
 
-scrapeUrl(url, selectors)
-    .then(data => console.log(JSON.stringify(data, null, 2)))
-    .catch(error => console.error(error));
-
-exports.handler = async (event, context) => {
     try {
         const data = await scrapeUrl(url, selectors);
-        console.log(JSON.stringify(data, null, 2));
-        return data;
+        console.log(JSON.stringify(data, null, 2))
+        res.status(200).json(data);
     } catch (error) {
         console.error(error);
-        return { error: error.message };
+        res.status(500).json({ error: error.message });
     }
 };
