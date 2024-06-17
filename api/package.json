@@ -1,0 +1,16 @@
+{
+  "name": "web-scraper-api",
+  "version": "1.0.0",
+  "description": "This is an API for using the web scraping service in an application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "API",
+    "Node.js",
+    "web_scraper"
+  ],
+  "author": "Aadi Umrani",
+  "license": "ISC"
+}
