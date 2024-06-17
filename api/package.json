@@ -12,5 +12,8 @@
     "web_scraper"
   ],
   "author": "Aadi Umrani",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5"
+  }
 }
