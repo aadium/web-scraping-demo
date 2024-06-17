@@ -1,3 +1,4 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 import { cheerio } from "https://deno.land/x/denocheerio/mod.ts";
 
 async function scrapeUrl(
@@ -22,18 +23,32 @@ async function scrapeUrl(
     }
 }
 
-Deno.serve(async (req) => {
-    const url = "https://techcrunch.com/";
-    const selectors = {
-        title: "h2.wp-block-post-title",
-        author: "div.wp-block-tc23-author-card-name",
-    };
+async function fetchData(id: string) {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    const { data, error } = await supabase
+        .from('scrapers')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) {
+        console.error(error);
+        return new Response(JSON.stringify({ error: error.message }), {
+            headers: { "Content-Type": "application/json" },
+            status: 500,
+        });
+    }
+
+    const { url, selectors } = data;
 
     try {
-        const data = await scrapeUrl(url, selectors);
-        console.log(JSON.stringify(data, null, 2));
+        const scrapedData = await scrapeUrl(url, selectors);
+        console.log(JSON.stringify(scrapedData, null, 2));
 
-        return new Response(JSON.stringify(data), {
+        return new Response(JSON.stringify(scrapedData), {
             headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
@@ -44,4 +59,9 @@ Deno.serve(async (req) => {
             status: 500,
         });
     }
+}
+
+Deno.serve(async (req) => {
+    const { id } = await req.json();
+    return await fetchData(id);
 });
