@@ -3,18 +3,23 @@ import { cheerio } from "https://deno.land/x/denocheerio/mod.ts";
 
 async function scrapeUrl(
     url: string,
-    selectors: { title: string; author: string }
-)   {
+    selectors: { [key: string]: string }
+) {
     try {
         const response = await fetch(url);
         const text = await response.text();
         const $ = cheerio.load(text);
 
-        const scrapedData: { title: string; author: string }[] = [];
-        $(selectors.title).each((index, element) => {
-        const title = $(element).text().trim();
-        const author = $(selectors.author).eq(index).text().trim();
-        scrapedData.push({ title, author });
+        const scrapedData: { [key: string]: string }[] = [];
+        const keys = Object.keys(selectors);
+
+        $(selectors[keys[0]]).each((index, element) => {
+            const item: { [key: string]: string } = {};
+            for (const key of keys) {
+                const value = $(selectors[key]).eq(index).text().trim();
+                item[key] = value;
+            }
+            scrapedData.push(item);
         });
 
         return scrapedData;
