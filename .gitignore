@@ -1,5 +1,10 @@
 test
+
 # Supabase
 supabase/.branches
 supabase/.temp
 supabase/.env
+
+# API
+api/.env
+api/node_modules
