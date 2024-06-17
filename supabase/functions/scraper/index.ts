@@ -48,12 +48,32 @@ async function fetchData(id: string) {
         const scrapedData = await scrapeUrl(url, selectors);
         console.log(JSON.stringify(scrapedData, null, 2));
 
+        const fileName = `${id}_${Date.now()}.json`;
+        const { error: uploadError } = await supabase.storage
+            .from('outputs')
+            .upload(fileName, new Blob([JSON.stringify(scrapedData)]), { contentType: 'application/json' });
+
+        if (uploadError) {
+            console.error('Upload Error', JSON.stringify(uploadError, null, 2));
+            throw uploadError;
+        }
+
+        const bucketUrl = `${supabaseUrl}/storage/v1/object/public/outputs/${fileName}`;
+
+        const { error: insertError } = await supabase
+            .from('outputs')
+            .insert([{ scraper_id: id, bucket_url: bucketUrl }]);
+
+        if (insertError) {
+            console.error('Insertion Error' + JSON.stringify(insertError, null, 2));
+            throw insertError;
+        }
+
         return new Response(JSON.stringify(scrapedData), {
             headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
         console.error(error);
-
         return new Response(JSON.stringify({ error: error.message }), {
             headers: { "Content-Type": "application/json" },
             status: 500,
