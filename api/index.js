@@ -18,7 +18,7 @@ app.post('/create', async (req, res) => {
     if (!name || !url || !selectors) {
         return res.status(400).json({ error: 'Missing name, url, or selectors in request body' });
     }
-    const { data, error } = await supabase.from('scrapes').insert([{ name, url, selectors }], { returning: 'minimal' });
+    const { data, error } = await supabase.from('scrapers').insert([{ name, url, selectors }], { returning: 'minimal' });
     if (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
@@ -26,12 +26,38 @@ app.post('/create', async (req, res) => {
     res.json(data);
 });
 
-app.post('/start', async (req, res) => {
-    const { id } = req.body;
+app.delete('/delete/:id', async (req, res) => {
+    const id = req.params.id;
+    if (!id) {
+        return res.status(400).json({ error: 'Missing id in request body' });
+    }
+    const { data, error } = await supabase.from('scrapers').delete().eq('id', id);
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+});
+
+app.post('/start/:id', async (req, res) => {
+    const id = req.params.id;
     if (!id) {
         return res.status(400).json({ error: 'Missing id in request body' });
     }
     const { data, error } = await supabase.functions.invoke('scraper', { body: { id } });
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+});
+
+app.get('/outputs/:id', async (req, res) => {
+    const id = req.params.id;
+    if (!id) {
+        return res.status(400).json({ error: 'Missing id in request params' });
+    }
+    const { data, error } = await supabase.from('outputs').select().eq('scraper_id', id);
     if (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
