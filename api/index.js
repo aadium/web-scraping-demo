@@ -11,7 +11,44 @@ app.get('/', (req, res) => {
     res.send('Web Scraper API');
 });
 
-app.post('/create', async (req, res) => {
+app.post('/auth/login', async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Missing email or password in request body' });
+    }
+    const { user, session, error } = await supabase.auth.signIn({ email, password });
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+    res.json({ user, session });
+});
+
+app.post('/auth/signup', async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Missing email or password in request body' });
+    }
+    const { user, session, error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+    res.json({ user, session });
+});
+
+app.post('/auth/logout', async (req, res) => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+    res.json({ message: 'Logged out' });
+});
+
+app.post('/scraper/create', async (req, res) => {
     const name = req.body.name;
     const url = req.body.url;
     const selectors = req.body.selectors;
@@ -26,7 +63,7 @@ app.post('/create', async (req, res) => {
     res.json(data);
 });
 
-app.delete('/delete/:id', async (req, res) => {
+app.delete('/scraper/delete/:id', async (req, res) => {
     const id = req.params.id;
     if (!id) {
         return res.status(400).json({ error: 'Missing id in request body' });
@@ -39,7 +76,7 @@ app.delete('/delete/:id', async (req, res) => {
     res.json(data);
 });
 
-app.post('/start/:id', async (req, res) => {
+app.post('/scraper/start/:id', async (req, res) => {
     const id = req.params.id;
     if (!id) {
         return res.status(400).json({ error: 'Missing id in request body' });
@@ -52,7 +89,7 @@ app.post('/start/:id', async (req, res) => {
     res.json(data);
 });
 
-app.get('/outputs/:id', async (req, res) => {
+app.get('/scraper/outputs/:id', async (req, res) => {
     const id = req.params.id;
     if (!id) {
         return res.status(400).json({ error: 'Missing id in request params' });
