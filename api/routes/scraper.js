@@ -4,12 +4,12 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 
 const router = express.Router();
 
-router.get('/:uid', (req, res) => {
+router.get('/:uid', async (req, res) => {
     const uid = req.params.uid;
     if (!uid) {
         return res.status(400).json({ error: 'Missing uid in request params' });
     }
-    const { data, error } = supabase.from('scrapers').select().eq('uid', uid);
+    const { data, error } = await supabase.from('scrapers').select().eq('uid', uid);
     if (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
@@ -18,13 +18,14 @@ router.get('/:uid', (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
+    const uid = req.body.uid;
     const name = req.body.name;
     const url = req.body.url;
     const selectors = req.body.selectors;
     if (!name || !url || !selectors) {
         return res.status(400).json({ error: 'Missing name, url, or selectors in request body' });
     }
-    const { data, error } = await supabase.from('scrapers').insert([{ name, url, selectors }], { returning: 'minimal' });
+    const { data, error } = await supabase.from('scrapers').insert([{ uid, name, url, selectors }], { returning: 'minimal' });
     if (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });

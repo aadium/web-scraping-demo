@@ -10,12 +10,12 @@ router.post('/signin', async (req, res) => {
     if (!email || !password) {
         return res.status(400).json({ error: 'Missing email or password in request body' });
     }
-    const { user, session, error } = await supabase.auth.signIn({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
     }
-    res.json({ user, session });
+    res.status(200).json({ user: data.user });
 });
 
 router.post('/signup', async (req, res) => {
