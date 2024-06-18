@@ -15,7 +15,7 @@ router.post('/signin', async (req, res) => {
         console.error(error);
         return res.status(500).json({ error: error.message });
     }
-    res.status(200).json({ user: data.user });
+    res.status(200).json({ token: data.session.access_token, user: data.user });
 });
 
 router.post('/signup', async (req, res) => {
