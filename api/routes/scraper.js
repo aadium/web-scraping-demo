@@ -73,4 +73,19 @@ router.get('/outputs/:id', authMiddleware, async (req, res) => {
     res.json(data);
 });
 
+router.get('/output/:id', authMiddleware, async (req, res) => {
+    const id = req.params.id;
+    if (!id) {
+        return res.status(400).json({ error: 'Missing id in request params' });
+    }
+    const { data, error } = await supabase.from('outputs').select().eq('id', id).single();
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+    const bucket_url = data.bucket_url;
+    const output_data = await fetch(bucket_url).then(res => res.json());
+    res.json(output_data);
+});
+
 module.exports = router;
