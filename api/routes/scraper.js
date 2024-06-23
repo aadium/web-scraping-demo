@@ -18,6 +18,19 @@ router.get('/', authMiddleware, async (req, res) => {
     res.json(data);
 });
 
+router.get('/:id', authMiddleware, async (req, res) => {
+    const id = req.params.id;
+    if (!id) {
+        return res.status(400).json({ error: 'Missing id in request params' });
+    }
+    const { data, error } = await supabase.from('scrapers').select().eq('id', id).single();
+    if (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+    res.json(data);
+});
+
 router.post('/create', authMiddleware, async (req, res) => {
     const uid = req.auth.user.id;
     const name = req.body.name;
@@ -34,7 +47,7 @@ router.post('/create', authMiddleware, async (req, res) => {
     res.json(data);
 });
 
-router.delete('/delete/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
     const id = req.params.id;
     if (!id) {
         return res.status(400).json({ error: 'Missing id in request body' });
