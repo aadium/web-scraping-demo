@@ -86,7 +86,7 @@ router.get('/outputs/:id', authMiddleware, async (req, res) => {
     res.json(data);
 });
 
-router.get('/output/:id', authMiddleware, async (req, res) => {
+router.get('/output/:id', async (req, res) => {
     const id = req.params.id;
     if (!id) {
         return res.status(400).json({ error: 'Missing id in request params' });
