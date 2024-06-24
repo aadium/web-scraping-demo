@@ -8,7 +8,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://scrapify-web.vercel.app/'],
+    origin: ['http://localhost:3000', 'https://scrapify-web.vercel.app'],
 }));
 
 app.use('/auth', authRoutes);
