@@ -7,7 +7,9 @@ const scraperRoutes = require('./routes/scraper');
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:3000', 'https://scrapify-web.vercel.app/'],
+}));
 
 app.use('/auth', authRoutes);
 app.use('/scraper', scraperRoutes);
