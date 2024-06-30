@@ -1,9 +1,11 @@
 const express = require('express');
+const Sentiment = require('sentiment');
 const { createClient } = require('@supabase/supabase-js');
 const authMiddleware = require('../middlewares/auth');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 const router = express.Router();
+const sentiment = new Sentiment();
 
 router.get('/', authMiddleware, async (req, res) => {
     const uid = req.auth.user.id;
@@ -99,6 +101,45 @@ router.get('/output/:id', async (req, res) => {
     const bucket_url = data.bucket_url;
     const output_data = await fetch(bucket_url).then(res => res.json());
     res.json(output_data);
+});
+
+router.post('/sentiment-analysis', (req, res) => {
+    const data = req.body.data;
+    if (!data || !Array.isArray(data)) {
+        return res.status(400).json({ error: 'No data provided or data is not an array' });
+    }
+
+    const results = data.map(item => {
+        const textFields = Object.keys(item).filter(key => typeof item[key] === 'string');
+        const sentimentResults = textFields.map(field => {
+            const text = item[field];
+            if (!text) {
+                return null;
+            }
+            if (text.length === 0) {
+                return null;
+            }
+            if (text.length > 5000) {
+                return null;
+            }
+            const analysis = sentiment.analyze(text);
+            let result = {
+                field: field,
+                text: text,
+                score: analysis.score,
+            };
+            if (analysis.positive.length > 0) {
+                result.positive = analysis.positive;
+            };
+            if (analysis.negative.length > 0) {
+                result.negative = analysis.negative;
+            };
+            return result;
+        }).filter(result => result !== null);
+        return sentimentResults;
+    });
+
+    res.json(results);
 });
 
 module.exports = router;
