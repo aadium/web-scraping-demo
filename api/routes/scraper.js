@@ -103,7 +103,7 @@ router.get('/output/:id', async (req, res) => {
     res.json(output_data);
 });
 
-router.post('/sentiment-analysis', (req, res) => {
+router.post('/sentiment', (req, res) => {
     const data = req.body.data;
     if (!data || !Array.isArray(data)) {
         return res.status(400).json({ error: 'No data provided or data is not an array' });
