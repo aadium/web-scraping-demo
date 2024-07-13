@@ -1,7 +1,7 @@
 Welcome to the web scraping demo repository. In this repository, I have coded a backend server capable of web scraping, and storing that data in a database.
 
 ### API
-For developing the backend API, I have used Node.js with the Node Package Manager (NPM). Also, I have written down the code in JavaScript as opposed to TypeScript.
+For developing the API, I have used Node.js with the Node Package Manager (NPM). Also, I have written down the code in JavaScript as opposed to TypeScript.
 
 The API can be accessed from here:<br>
 [<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/27496888-1da196c3-6aed-4c2f-8fe3-6108ffa08814?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D27496888-1da196c3-6aed-4c2f-8fe3-6108ffa08814%26entityType%3Dcollection%26workspaceId%3D2bf9ba9f-dce8-4687-99ef-23fe5c15a33c)
