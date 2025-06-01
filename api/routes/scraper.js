@@ -67,7 +67,7 @@ router.post('/start/:id', authMiddleware, async (req, res) => {
     if (!id) {
         return res.status(400).json({ error: 'Missing id in request body' });
     }
-    const { data, error } = await supabase.functions.invoke('scraper', { body: { id } });
+    const { data, error } = await supabase.functions.invoke('web-scraper', { body: { id } });
     if (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
